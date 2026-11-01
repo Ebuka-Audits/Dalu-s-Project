@@ -1,0 +1,14 @@
+<header class="topbar">
+  <a class="brand" href="/dashboard">Ledgerly</a>
+  <nav class="nav-links" aria-label="Main">
+    <% [['dashboard','/dashboard','Dashboard'], ['transactions','/transactions','Transactions'],
+        ['planning','/planning','Budgets & goals'], ['markets','/markets','Markets'],
+        ['portfolio','/portfolio','Portfolio'], ['settings','/settings','Settings']].forEach(l => { %>
+      <a href="<%= l[1] %>" <%- active === l[0] ? 'aria-current="page"' : '' %>><%= l[2] %></a>
+    <% }) %>
+  </nav>
+  <div class="topbar-right">
+    <span class="who"><%= userName %></span>
+    <form method="post" action="/logout"><button class="btn ghost" type="submit">Log out</button></form>
+  </div>
+</header>

@@ -1,0 +1,57 @@
+<%- include('partials/head', { title: 'Transactions' }) %>
+<body>
+  <%- include('partials/nav') %>
+  <main class="wrap">
+    <div class="page-head">
+      <h1 class="page-title">Transactions</h1>
+      <div class="row wrap-row">
+        <label class="inline">Month <input type="month" id="month"></label>
+        <a class="btn ghost" href="/api/export.csv">Export CSV</a>
+      </div>
+    </div>
+
+    <div class="tx-layout">
+      <div class="panel">
+        <h2 id="formTitle">Add a transaction</h2>
+        <form id="txForm" class="stack">
+          <div class="seg" role="radiogroup" aria-label="Type">
+            <label><input type="radio" name="type" value="expense" checked> Expense</label>
+            <label><input type="radio" name="type" value="income"> Income</label>
+          </div>
+          <label>Category <select id="txCategory" required></select></label>
+          <label>Amount (₦) <input id="txAmount" type="number" step="0.01" min="0.01" required inputmode="decimal"></label>
+          <label>Date <input id="txDate" type="date" required></label>
+          <label>Note <input id="txNote" maxlength="200" placeholder="Optional"></label>
+          <p id="formError" class="alert" role="alert" hidden></p>
+          <div class="row">
+            <button class="btn primary" type="submit" id="saveBtn">Add transaction</button>
+            <button class="btn ghost" type="button" id="cancelEdit" hidden>Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>This month</h2>
+          <div class="row wrap-row">
+            <select id="filterType" aria-label="Filter by type">
+              <option value="">All</option><option value="income">Income</option><option value="expense">Expenses</option>
+            </select>
+            <input id="search" type="search" placeholder="Search notes or category" aria-label="Search">
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Date</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
+            <tbody id="txBody"></tbody>
+          </table>
+        </div>
+        <p id="txEmpty" class="empty" hidden>No transactions for this month. Add one to get started.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/transactions.js"></script>
+</body>
+</html>

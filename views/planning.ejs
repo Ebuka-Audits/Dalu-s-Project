@@ -1,0 +1,38 @@
+<%- include('partials/head', { title: 'Budgets and goals' }) %>
+<body>
+  <%- include('partials/nav') %>
+  <main class="wrap">
+    <div class="page-head"><h1 class="page-title">Budgets &amp; goals</h1></div>
+
+    <div class="two-col">
+      <div class="panel">
+        <h2>Monthly budgets</h2>
+        <p class="empty">Progress is for the current month.</p>
+        <ul id="budgetList" class="budgets"></ul>
+        <p id="budgetEmpty" class="empty" hidden>No budgets yet. Set a limit below to get a warning before you overspend.</p>
+        <form id="budgetForm" class="row wrap-row">
+          <select id="budgetCategory" aria-label="Budget category" required></select>
+          <input id="budgetLimit" type="number" min="0" step="0.01" placeholder="Limit in ₦ (0 removes)" required inputmode="decimal" aria-label="Monthly limit">
+          <button class="btn primary" type="submit">Save budget</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Savings goals</h2>
+        <ul id="goalList" class="budgets"></ul>
+        <p id="goalEmpty" class="empty" hidden>No goals yet. Add one below, for example a laptop or school fees.</p>
+        <form id="goalForm" class="stack">
+          <label>Goal name <input id="goalName" required maxlength="80" placeholder="e.g. New laptop"></label>
+          <label>Target amount (₦) <input id="goalTarget" type="number" min="1" step="0.01" required inputmode="decimal"></label>
+          <label>Deadline (optional) <input id="goalDeadline" type="date"></label>
+          <p id="goalMsg" class="empty" hidden></p>
+          <button class="btn primary" type="submit">Add goal</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/planning.js"></script>
+</body>
+</html>

@@ -85,6 +85,36 @@ async function init() {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
   `);
+
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS physical_assets (
+      id             INT AUTO_INCREMENT PRIMARY KEY,
+      user_id        INT NOT NULL,
+      category       VARCHAR(30) NOT NULL,
+      name           VARCHAR(80) NOT NULL,
+      purchase_value DECIMAL(16,2) NOT NULL DEFAULT 0,
+      current_value  DECIMAL(16,2) NOT NULL DEFAULT 0,
+      acquired_date  DATE NOT NULL,
+      note           VARCHAR(200) NOT NULL DEFAULT '',
+      created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_assets_user (user_id),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+  `);
+
+    try {
+    await pool.query("ALTER TABLE users ADD COLUMN theme VARCHAR(10) NOT NULL DEFAULT 'system'");
+  } catch (err) {
+    if (err.code !== 'ER_DUP_FIELDNAME') throw err;
+  }
+
+    for (const sql of [
+    'ALTER TABLE users ADD COLUMN usd_rate DECIMAL(12,2) NULL',
+    'ALTER TABLE physical_assets ADD COLUMN monthly_income DECIMAL(16,2) NOT NULL DEFAULT 0',
+  ]) {
+    try { await pool.query(sql); } catch (err) { if (err.code !== 'ER_DUP_FIELDNAME') throw err; }
+  }
+
 }
 
 module.exports = { pool, init };

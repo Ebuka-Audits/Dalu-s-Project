@@ -136,6 +136,99 @@ router.delete('/portfolio/:id', wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
+// ---------- Physical assets ----------
+// ---------- Physical assets ----------
+const ASSET_CATEGORIES = ['Land', 'Building', 'Business', 'Vehicle', 'Equipment', 'Farm', 'Other'];
+
+function validateAsset(body) {
+  const category = String(body.category || '');
+  const name = String(body.name || '').trim().slice(0, 80);
+  const cost = Number(body.purchase_value);
+  const rawCurrent = body.current_value;
+  const current = rawCurrent === '' || rawCurrent == null ? cost : Number(rawCurrent);
+  const rawIncome = body.monthly_income;
+  const income = rawIncome === '' || rawIncome == null ? 0 : Number(rawIncome);
+  const date = String(body.acquired_date || '');
+  const note = String(body.note || '').trim().slice(0, 200);
+
+  if (!ASSET_CATEGORIES.includes(category)) return { error: 'Choose a valid asset type.' };
+  if (!name) return { error: 'Enter a name for the asset.' };
+  if (!Number.isFinite(cost) || cost < 0 || cost > 1e13) return { error: 'Enter what you paid. Use 0 if it was a gift or inheritance.' };
+  if (!Number.isFinite(current) || current < 0 || current > 1e13) return { error: 'Enter a valid current value.' };
+  if (!Number.isFinite(income) || income < 0 || income > 1e12) return { error: 'Enter a valid monthly income, or leave it empty.' };
+  if (!validDate(date)) return { error: 'Enter a valid date.' };
+  const r = n => Math.round(n * 100) / 100;
+  return { value: { category, name, purchase_value: r(cost), current_value: r(current), monthly_income: r(income), acquired_date: date, note } };
+}
+
+router.get('/assets', wrap(async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT id, category, name, purchase_value, current_value, monthly_income, acquired_date, note
+     FROM physical_assets WHERE user_id = ? ORDER BY acquired_date DESC, id DESC`, [req.session.userId]);
+  res.json({ categories: ASSET_CATEGORIES, assets: rows });
+}));
+
+router.post('/assets', wrap(async (req, res) => {
+  const { error, value } = validateAsset(req.body);
+  if (error) return res.status(400).json({ error });
+  const [count] = await pool.query('SELECT COUNT(*) AS n FROM physical_assets WHERE user_id = ?', [req.session.userId]);
+  if (count[0].n >= 100) return res.status(400).json({ error: 'You can record up to 100 assets.' });
+  await pool.query(
+    `INSERT INTO physical_assets (user_id, category, name, purchase_value, current_value, monthly_income, acquired_date, note)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [req.session.userId, value.category, value.name, value.purchase_value, value.current_value, value.monthly_income, value.acquired_date, value.note]);
+  res.status(201).json({ ok: true });
+}));
+
+router.put('/assets/:id', wrap(async (req, res) => {
+  const { error, value } = validateAsset(req.body);
+  if (error) return res.status(400).json({ error });
+  const [found] = await pool.query('SELECT id FROM physical_assets WHERE id = ? AND user_id = ?', [req.params.id, req.session.userId]);
+  if (!found.length) return res.status(404).json({ error: 'Asset not found.' });
+  await pool.query(
+    `UPDATE physical_assets SET category = ?, name = ?, purchase_value = ?, current_value = ?, monthly_income = ?, acquired_date = ?, note = ?
+     WHERE id = ? AND user_id = ?`,
+    [value.category, value.name, value.purchase_value, value.current_value, value.monthly_income, value.acquired_date, value.note, req.params.id, req.session.userId]);
+  res.json({ ok: true });
+}));
+
+router.delete('/assets/:id', wrap(async (req, res) => {
+  await pool.query('DELETE FROM physical_assets WHERE id = ? AND user_id = ?', [req.params.id, req.session.userId]);
+  res.json({ ok: true });
+}));
+
+// ---------- Net worth ----------
+router.get('/networth', wrap(async (req, res) => {
+  const uid = req.session.userId;
+  const [[bal]] = await pool.query(
+    `SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END), 0) AS v
+     FROM transactions WHERE user_id = ?`, [uid]);
+  const [[ast]] = await pool.query(
+    'SELECT COALESCE(SUM(current_value), 0) AS v, COALESCE(SUM(monthly_income), 0) AS inc FROM physical_assets WHERE user_id = ?', [uid]);
+  const [[usr]] = await pool.query('SELECT usd_rate FROM users WHERE id = ?', [uid]);
+  const [holdings] = await pool.query('SELECT kind, asset_id, quantity FROM holdings WHERE user_id = ?', [uid]);
+
+  const prices = await priceMap(holdings);
+  let usdValue = 0, unpriced = 0;
+  for (const h of holdings) {
+    const p = prices.get(h.kind + '|' + h.asset_id);
+    if (p == null) unpriced++; else usdValue += Number(h.quantity) * p;
+  }
+
+  const rate = usr && usr.usd_rate ? Number(usr.usd_rate) : null;
+  const investments = holdings.length === 0 ? 0 : (rate ? usdValue * rate : null);
+  const cash = Number(bal.v);
+  const assets = Number(ast.v);
+
+  res.json({
+    cash, assets, investments, rate, unpriced,
+    holdings: holdings.length,
+    needsRate: holdings.length > 0 && !rate,
+    monthlyIncome: Number(ast.inc),
+    total: cash + assets + (investments || 0),
+  });
+}));
+
 // ---------- PDF report ----------
 const money = n => 'NGN ' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const INK = '#12261f', GREY = '#555555', GREEN = '#17744f', RED = '#c4432b';
@@ -162,6 +255,9 @@ function empty(doc, text) {
 }
 
 router.get('/report.pdf', wrap(async (req, res) => {
+  const [assets] = await pool.query(
+    'SELECT category, name, purchase_value, current_value FROM physical_assets WHERE user_id = ? ORDER BY id', [uid]
+);
   const uid = req.session.userId;
   const month = MONTH_RE.test(String(req.query.month || '')) ? String(req.query.month) : currentMonth();
   const [y, m] = month.split('-').map(Number);
@@ -252,6 +348,27 @@ router.get('/report.pdf', wrap(async (req, res) => {
         { text: pct + '%', x: 460, w: 85, align: 'right' },
       ]);
     });
+  }
+
+    heading(doc, 'Physical assets');
+  if (!assets.length) empty(doc, 'No physical assets recorded.');
+  else {
+    row(doc, [{ text: 'Asset', x: 50, w: 165 }, { text: 'Type', x: 220, w: 75 }, { text: 'Cost', x: 300, w: 115, align: 'right' }, { text: 'Current value', x: 420, w: 125, align: 'right' }], { bold: true });
+    let totalCost = 0, totalValue = 0;
+    assets.forEach(a => {
+      totalCost += Number(a.purchase_value);
+      totalValue += Number(a.current_value);
+      row(doc, [
+        { text: a.name, x: 50, w: 165 }, { text: a.category, x: 220, w: 75 },
+        { text: money(a.purchase_value), x: 300, w: 115, align: 'right' },
+        { text: money(a.current_value), x: 420, w: 125, align: 'right' },
+      ]);
+    });
+    row(doc, [
+      { text: 'Total', x: 50, w: 165 },
+      { text: money(totalCost), x: 300, w: 115, align: 'right' },
+      { text: money(totalValue), x: 420, w: 125, align: 'right' },
+    ], { bold: true });
   }
 
   heading(doc, 'Transactions');

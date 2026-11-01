@@ -1,0 +1,71 @@
+<%- include('partials/head', { title: 'Settings' }) %>
+<body>
+  <%- include('partials/nav') %>
+  <main class="wrap narrow">
+    <div class="page-head"><h1 class="page-title">Settings</h1></div>
+
+    <section class="panel">
+      <h2>Appearance</h2>
+      <div class="seg three" role="radiogroup" aria-label="Theme">
+        <label><input type="radio" name="theme" value="light" <%= theme === 'light' ? 'checked' : '' %>> Light</label>
+        <label><input type="radio" name="theme" value="dark" <%= theme === 'dark' ? 'checked' : '' %>> Dark</label>
+        <label><input type="radio" name="theme" value="system" <%= theme === 'system' ? 'checked' : '' %>> Match my device</label>
+      </div>
+      <p id="themeMsg" class="empty" hidden></p>
+    </section>
+
+        <section class="panel">
+      <h2>Exchange rate</h2>
+      <p class="empty">Your market investments are in US dollars. This rate turns them into naira for your net worth. Update it when the rate changes.</p>
+      <form id="rateForm" class="stack">
+        <label>Naira for US$1 <input id="setRate" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Enter today's rate" value="<%= user.usd_rate || '' %>"></label>
+        <p id="rateMsg" class="empty" hidden></p>
+        <button class="btn primary" type="submit">Save rate</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Name</h2>
+      <form id="profileForm" class="stack">
+        <label>Full name <input id="setName" required maxlength="60" value="<%= user.name %>"></label>
+        <p id="profileMsg" class="empty" hidden></p>
+        <button class="btn primary" type="submit">Save name</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Email</h2>
+      <form id="emailForm" class="stack">
+        <label>Email address <input id="setEmail" type="email" required value="<%= user.email %>"></label>
+        <label>Current password (to confirm) <input id="emailPw" type="password" required autocomplete="current-password"></label>
+        <p id="emailMsg" class="empty" hidden></p>
+        <button class="btn primary" type="submit">Change email</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Password</h2>
+      <form id="pwForm" class="stack">
+        <label>Current password <input id="pwCurrent" type="password" required autocomplete="current-password"></label>
+        <label>New password <input id="pwNew" type="password" required minlength="8" autocomplete="new-password"><small>At least 8 characters.</small></label>
+        <label>Confirm new password <input id="pwConfirm" type="password" required minlength="8" autocomplete="new-password"></label>
+        <p id="pwMsg" class="empty" hidden></p>
+        <button class="btn primary" type="submit">Change password</button>
+      </form>
+    </section>
+
+    <section class="panel danger-zone">
+      <h2>Delete account</h2>
+      <p class="empty">This permanently deletes your account and all your transactions, budgets, goals and holdings.</p>
+      <form id="delForm" class="stack">
+        <label>Password <input id="delPw" type="password" required autocomplete="current-password"></label>
+        <p id="delMsg" class="empty" hidden></p>
+        <button class="btn ghost danger" type="submit">Delete my account</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/settings.js"></script>
+</body>
+</html>

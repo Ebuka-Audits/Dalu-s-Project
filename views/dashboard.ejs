@@ -1,107 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard | Ledgerly</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
+<%- include('partials/head', { title: 'Dashboard' }) %>
 <body>
-  <header class="topbar">
-    <h1 class="brand"><a href="/dashboard">Ledgerly</a></h1>
-    <div class="topbar-right">
-      <span class="who"><%= name %></span>
-      <form method="post" action="/logout"><button class="btn ghost" type="submit">Log out</button></form>
-    </div>
-  </header>
-
-  <section class="panel">
-      <h2>Market charts</h2>
-      <form id="mkForm" class="row wrap-row">
-        <select id="mkMode" aria-label="Market type">
-          <option value="crypto">Crypto</option>
-          <option value="stock">Stocks</option>
-        </select>
-        <input id="mkInput" placeholder="Search a coin, e.g. bitcoin" maxlength="40" aria-label="Search">
-        <select id="mkRange" aria-label="Time range">
-          <option value="30">1 month</option>
-          <option value="90" selected>3 months</option>
-          <option value="180">6 months</option>
-          <option value="360">1 year</option>
-        </select>
-        <button class="btn primary" type="submit">Show chart</button>
-      </form>
-      <div id="mkResults" class="chips"></div>
-      <p id="mkMsg" class="empty"></p>
-      <h3 id="mkTitle" class="mk-title"></h3>
-      <div id="mkStats" class="mk-stats"></div>
-      <div class="chart-box"><canvas id="mkChart" aria-label="Price chart" role="img"></canvas></div>
-      <p class="empty">Prices are in US dollars. Data may be delayed and is for information only, not investment advice.</p>
-    </section>
-
-    <section class="two-col">
-      <div class="panel">
-        <h2>Savings goals</h2>
-        <ul id="goalList" class="budgets"></ul>
-        <p id="goalEmpty" class="empty" hidden>No goals yet. Add one below, for example a laptop or school fees.</p>
-        <form id="goalForm" class="stack">
-          <label>Goal name <input id="goalName" required maxlength="80" placeholder="e.g. New laptop"></label>
-          <label>Target amount (₦) <input id="goalTarget" type="number" min="1" step="0.01" required inputmode="decimal"></label>
-          <label>Deadline (optional) <input id="goalDeadline" type="date"></label>
-          <p id="goalMsg" class="empty" hidden></p>
-          <button class="btn primary" type="submit">Add goal</button>
-        </form>
-      </div>
-
-      <div class="panel">
-        <h2>Watchlist</h2>
-        <p class="empty">Pick a coin or stock in Market charts, then add it here.</p>
-        <button class="btn primary" type="button" id="watchAdd">Add the chart's asset to watchlist</button>
-        <p id="watchMsg" class="empty" hidden></p>
-        <div class="table-scroll">
-          <table>
-            <thead><tr><th>Asset</th><th class="num">Price (USD)</th><th></th></tr></thead>
-            <tbody id="watchBody"></tbody>
-          </table>
-        </div>
-        <p id="watchEmpty" class="empty" hidden>Your watchlist is empty.</p>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Investment portfolio</h2>
-      <div id="pfSummary" class="mk-stats"></div>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Asset</th><th class="num">Quantity</th><th class="num">Bought at</th><th class="num">Now</th><th class="num">Value</th><th class="num">Gain or loss</th><th></th></tr></thead>
-          <tbody id="pfBody"></tbody>
-        </table>
-      </div>
-      <p id="pfEmpty" class="empty" hidden>No holdings yet. Pick an asset in Market charts, then record what you bought below.</p>
-      <h2 class="pf-add">Record a purchase</h2>
-      <form id="pfForm" class="stack">
-        <label>Asset (from the market chart) <input id="pfAsset" readonly></label>
-        <label>Quantity <input id="pfQty" type="number" min="0" step="any" required inputmode="decimal"></label>
-        <label>Price paid per unit (USD) <input id="pfPrice" type="number" min="0" step="any" required inputmode="decimal"></label>
-        <label>Purchase date <input id="pfDate" type="date" required></label>
-        <p id="pfMsg" class="empty" hidden></p>
-        <button class="btn primary" type="submit">Add to portfolio</button>
-      </form>
-    </section>
-
+  <%- include('partials/nav') %>
   <main class="wrap">
-    <section class="toolbar">
-      <label class="inline">Month
-        <input type="month" id="month">
-      </label>
-      <div class="row">
-        <a class="btn ghost" href="/api/export.csv">Export CSV</a>
+    <div class="page-head">
+      <h1 class="page-title">Dashboard</h1>
+      <div class="row wrap-row">
+        <label class="inline">Month <input type="month" id="month"></label>
         <a class="btn ghost" id="pdfLink" href="/api/report.pdf">PDF report</a>
       </div>
-        </section>
+    </div>
 
     <section class="stats">
       <div class="balance">
@@ -111,6 +18,16 @@
       </div>
       <div class="stat"><span class="label">Income this month</span><strong id="income" class="pos">₦0.00</strong></div>
       <div class="stat"><span class="label">Spending this month</span><strong id="expense" class="neg">₦0.00</strong></div>
+    </section>
+
+        <section class="panel">
+      <div class="panel-head">
+        <h2>Net worth</h2>
+        <a class="btn ghost small" href="/portfolio">Portfolio</a>
+      </div>
+      <div id="nwStats" class="mk-stats"></div>
+      <div id="nwBar" class="nw-bar" role="img" aria-label="Share of net worth by type" hidden></div>
+      <p id="nwMsg" class="empty" hidden>Loading…</p>
     </section>
 
     <section class="charts">
@@ -125,61 +42,23 @@
       </div>
     </section>
 
-    <section class="two-col">
-      <div class="panel">
-        <h2 id="formTitle">Add a transaction</h2>
-        <form id="txForm" class="stack">
-          <div class="seg" role="radiogroup" aria-label="Type">
-            <label><input type="radio" name="type" value="expense" checked> Expense</label>
-            <label><input type="radio" name="type" value="income"> Income</label>
-          </div>
-          <label>Category <select name="category" required></select></label>
-          <label>Amount (₦) <input name="amount" type="number" step="0.01" min="0.01" required inputmode="decimal"></label>
-          <label>Date <input name="date" type="date" required></label>
-          <label>Note <input name="note" maxlength="200" placeholder="Optional"></label>
-          <p id="formError" class="alert" role="alert" hidden></p>
-          <div class="row">
-            <button class="btn primary" type="submit" id="saveBtn">Add transaction</button>
-            <button class="btn ghost" type="button" id="cancelEdit" hidden>Cancel</button>
-          </div>
-        </form>
-      </div>
-
-      <div class="panel">
-        <h2>Monthly budgets</h2>
-        <ul id="budgetList" class="budgets"></ul>
-        <p id="budgetEmpty" class="empty" hidden>No budgets yet. Set a limit below to get a warning before you overspend.</p>
-        <form id="budgetForm" class="row wrap-row">
-          <select name="category" aria-label="Budget category" required></select>
-          <input name="limit" type="number" min="0" step="0.01" placeholder="Limit in ₦ (0 removes)" required inputmode="decimal" aria-label="Monthly limit">
-          <button class="btn primary" type="submit">Save budget</button>
-        </form>
-      </div>
-    </section>
-
     <section class="panel">
       <div class="panel-head">
-        <h2>Transactions</h2>
-        <div class="row wrap-row">
-          <select id="filterType" aria-label="Filter by type">
-            <option value="">All</option><option value="income">Income</option><option value="expense">Expenses</option>
-          </select>
-          <input id="search" type="search" placeholder="Search notes or category" aria-label="Search">
-        </div>
+        <h2>Recent transactions</h2>
+        <a class="btn ghost small" href="/transactions">View all</a>
       </div>
       <div class="table-scroll">
         <table>
-          <thead><tr><th>Date</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
-          <tbody id="txBody"></tbody>
+          <thead><tr><th>Date</th><th>Category</th><th>Note</th><th class="num">Amount</th></tr></thead>
+          <tbody id="recentBody"></tbody>
         </table>
       </div>
-      <p id="txEmpty" class="empty" hidden>No transactions for this month. Add one to get started.</p>
+      <p id="recentEmpty" class="empty" hidden>No transactions this month. <a href="/transactions">Add one</a>.</p>
     </section>
   </main>
 
   <script src="/vendor/chart.js/chart.umd.js"></script>
+  <script src="/js/common.js"></script>
   <script src="/js/dashboard.js"></script>
-  <script src="/js/market.js"></script>
-  <script src="/js/extras.js"></script>
 </body>
 </html>

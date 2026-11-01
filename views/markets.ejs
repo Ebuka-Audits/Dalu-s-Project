@@ -1,0 +1,83 @@
+<%- include('partials/head', { title: 'Portfolio' }) %>
+<body>
+  <%- include('partials/nav') %>
+  <main class="wrap">
+    <div class="page-head"><h1 class="page-title">Portfolio</h1></div>
+
+    <div class="tabs" role="tablist" aria-label="Portfolio sections">
+      <button type="button" role="tab" id="tabMarketBtn" aria-selected="true" aria-controls="tabMarket">Market investments</button>
+      <button type="button" role="tab" id="tabPhysicalBtn" aria-selected="false" aria-controls="tabPhysical">Physical assets</button>
+    </div>
+
+    <div id="tabMarket" class="tab-panel" role="tabpanel">
+      <section class="panel">
+        <div id="pfSummary" class="mk-stats"></div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Asset</th><th class="num">Quantity</th><th class="num">Bought at</th><th class="num">Now</th><th class="num">Value</th><th class="num">Gain or loss</th><th></th></tr></thead>
+            <tbody id="pfBody"></tbody>
+          </table>
+        </div>
+        <p id="pfEmpty" class="empty" hidden>No holdings yet. Record your first purchase below.</p>
+        <p class="empty">Values are in US dollars and may be delayed. Not investment advice.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Record a purchase</h2>
+        <form id="pfFindForm" class="row wrap-row">
+          <select id="pfKind" aria-label="Asset type">
+            <option value="crypto">Crypto</option>
+            <option value="stock">Stock</option>
+          </select>
+          <input id="pfQuery" placeholder="Coin name, e.g. bitcoin" maxlength="40" required aria-label="Find asset">
+          <button class="btn ghost" type="submit">Find</button>
+        </form>
+        <div id="pfResults" class="chips"></div>
+        <form id="pfForm" class="stack">
+          <label>Selected asset <input id="pfAsset" readonly placeholder="Find an asset above"></label>
+          <label>Quantity <input id="pfQty" type="number" min="0" step="any" required inputmode="decimal"></label>
+          <label>Price paid per unit (USD) <input id="pfPrice" type="number" min="0" step="any" required inputmode="decimal"></label>
+          <label>Purchase date <input id="pfDate" type="date" required></label>
+          <p id="pfMsg" class="empty" hidden></p>
+          <button class="btn primary" type="submit">Add to portfolio</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="tabPhysical" class="tab-panel" role="tabpanel" hidden>
+      <section class="panel">
+        <div id="asSummary" class="mk-stats"></div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Asset</th><th>Type</th><th>Acquired</th><th class="num">Cost</th><th class="num">Current value</th><th class="num">Gain or loss</th><th></th></tr></thead>
+            <tbody id="asBody"></tbody>
+          </table>
+        </div>
+        <p id="asEmpty" class="empty" hidden>No physical assets yet. Add land, a building, a business or equipment below.</p>
+        <p class="empty">Values are in naira and are your own estimates. Update them from time to time, for example after a valuation.</p>
+      </section>
+
+      <section class="panel">
+        <h2 id="asTitle">Add a physical asset</h2>
+        <form id="asForm" class="stack">
+          <label>Type <select id="asCategory" required></select></label>
+          <label>Name <input id="asName" required maxlength="80" placeholder="e.g. Plot of land in Ohaji"></label>
+          <label>What you paid (₦) <input id="asCost" type="number" min="0" step="0.01" required inputmode="decimal"><small>Use 0 if it was a gift or inheritance.</small></label>
+          <label>Current value (₦) <input id="asValue" type="number" min="0" step="0.01" inputmode="decimal"><small>Leave empty to use the price you paid.</small></label>
+          <label>Date acquired <input id="asDate" type="date" required></label>
+          <label>Note <input id="asNote" maxlength="200" placeholder="Optional, e.g. location or title document"></label>
+          <p id="asMsg" class="empty" hidden></p>
+          <div class="row">
+            <button class="btn primary" type="submit" id="asSave">Add asset</button>
+            <button class="btn ghost" type="button" id="asCancel" hidden>Cancel</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/portfolio.js"></script>
+  <script src="/js/assets.js"></script>
+</body>
+</html>

@@ -22,17 +22,18 @@ function startSession(req, res, user) {
     if (err) throw err;
     req.session.userId = user.id;
     req.session.name = user.name;
-    res.redirect('/');
+    req.session.theme = user.theme || 'system';
+    res.redirect('/dashboard');
   });
 }
 
 router.get('/login', (req, res) => {
-  if (req.session.userId) return res.redirect('/');
+  if (req.session.userId) return res.redirect('/dashboard');
   res.render('auth', { mode: 'login', error: null, values: {} });
 });
 
 router.get('/register', (req, res) => {
-  if (req.session.userId) return res.redirect('/');
+  if (req.session.userId) return res.redirect('/dashboard ');
   res.render('auth', { mode: 'register', error: null, values: {} });
 });
 
