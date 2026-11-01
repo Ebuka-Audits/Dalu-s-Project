@@ -80,3 +80,5 @@ init()
     console.error('Could not connect to MySQL. Check your .env settings and that MySQL is running.\n', err.message);
     process.exit(1);
   });
+
+  module.exports = app; // for testing
