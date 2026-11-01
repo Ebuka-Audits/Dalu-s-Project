@@ -9,7 +9,8 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   dateStrings: true,      // dates come back as 'YYYY-MM-DD'
   decimalNumbers: true,   // DECIMAL columns come back as numbers
-  ssl: { rejectUnauthorized: false } // <-- change this if you have a self-signed cert
+  ssl: { rejectUnauthorized: false }, // <-- change this if you have a self-signed cert
+  connectTimeout: 30000,   // 30 seconds
 });
 
 async function init() {
