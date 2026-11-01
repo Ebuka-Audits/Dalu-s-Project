@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ledgerly | Know where your naira goes</title>
+  <meta name="description" content="Track income and spending in naira, set budgets and savings goals, and follow crypto and stock prices in one place.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body class="home">
+  <header class="home-nav">
+    <a class="brand" href="/">Ledgerly</a>
+    <nav class="home-nav-links" aria-label="Main">
+      <% if (loggedIn) { %>
+        <a class="btn gold" href="/dashboard">Open dashboard</a>
+      <% } else { %>
+        <a class="btn ghost-light" href="/login">Log in</a>
+        <a class="btn gold" href="/register">Create account</a>
+      <% } %>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Know where your naira goes.</h1>
+      <p class="lead">Record what comes in and what goes out, set limits before you overspend, save towards what matters, and watch crypto and stock prices, all in one place.</p>
+      <div class="hero-actions">
+        <% if (loggedIn) { %>
+          <a class="btn gold big" href="/dashboard">Go to your dashboard</a>
+        <% } else { %>
+          <a class="btn gold big" href="/register">Start tracking, it's free</a>
+          <a class="btn ghost-light big" href="/login">I have an account</a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="sheet" role="img" aria-label="Example of a Ledgerly dashboard with a balance, three transactions and a food budget">
+      <div class="sheet-balance">
+        <span>Total balance</span>
+        <strong>₦184,500.00</strong>
+      </div>
+      <ul class="sheet-rows">
+        <li><span>Allowance</span><span class="pos">+₦60,000.00</span></li>
+        <li><span>Food</span><span class="neg">-₦12,800.00</span></li>
+        <li><span>Data &amp; airtime</span><span class="neg">-₦3,500.00</span></li>
+        <li><span>School fees</span><span class="neg">-₦45,000.00</span></li>
+      </ul>
+      <div class="sheet-budget">
+        <div class="top"><span>Food budget</span><span>₦12,800 of ₦20,000</span></div>
+        <div class="bar"><span style="width:64%"></span></div>
+      </div>
+      <p class="sheet-note">Sample data</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>What you can do with it</h2>
+    <div class="feature-list">
+      <article>
+        <h3>Track every naira</h3>
+        <p>Add income and spending in seconds, sort them into categories like food, transport and school fees, and search or edit them later.</p>
+      </article>
+      <article>
+        <h3>Stay inside your budget</h3>
+        <p>Set a monthly limit for each category. You get a warning at 80% and a clear alert when you go over.</p>
+      </article>
+      <article>
+        <h3>Save towards goals</h3>
+        <p>Name what you are saving for, set a target and a deadline, and see how much to put aside each month.</p>
+      </article>
+      <article>
+        <h3>Follow the markets</h3>
+        <p>Chart crypto and US stocks over the last month to year, and keep a watchlist of the ones you care about.</p>
+      </article>
+      <article>
+        <h3>Record your investments</h3>
+        <p>Log what you bought and at what price. Your portfolio shows its current value and your gain or loss.</p>
+      </article>
+      <article>
+        <h3>Take it with you</h3>
+        <p>Download a PDF report for any month, or export all your transactions to a spreadsheet.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section steps-section">
+    <h2>Up and running in three steps</h2>
+    <ol class="steps">
+      <li><strong>Create an account.</strong> It takes a minute and needs only your name, email and a password.</li>
+      <li><strong>Record your money.</strong> Add your allowance or salary, then log spending as it happens.</li>
+      <li><strong>Check your month.</strong> Open the dashboard to see where it went, and download your report.</li>
+    </ol>
+  </section>
+
+  <section class="cta">
+    <h2>Start with this month.</h2>
+    <% if (loggedIn) { %>
+      <a class="btn gold big" href="/dashboard">Open dashboard</a>
+    <% } else { %>
+      <a class="btn gold big" href="/register">Create your free account</a>
+    <% } %>
+  </section>
+  
+  <section class="section">
+    <h2>Questions people ask</h2>
+    <div class="faq">
+      <details>
+        <summary>Does Ledgerly connect to my bank account?</summary>
+        <p>No. You record your income and spending yourself, so nothing is shared with your bank and no card details are ever needed.</p>
+      </details>
+      <details>
+        <summary>Is my data private?</summary>
+        <p>Each account only sees its own records. Passwords are stored in scrambled (hashed) form, and you can export or delete your entries at any time.</p>
+      </details>
+      <details>
+        <summary>Does it cost anything?</summary>
+        <p>No. Creating an account and using every feature is free.</p>
+      </details>
+      <details>
+        <summary>Where do the crypto and stock prices come from?</summary>
+        <p>Crypto prices come from CoinPaprika and stock prices from Tiingo. Prices are in US dollars, may be delayed, and are for information only, not investment advice.</p>
+      </details>
+      <details>
+        <summary>Can I track Nigerian stocks?</summary>
+        <p>Not yet. The market charts cover crypto and US stocks and ETFs. Your income, spending, budgets and savings goals are all in naira.</p>
+      </details>
+      <details>
+        <summary>Can I use it on my phone?</summary>
+        <p>Yes. The pages adjust to any screen size, so you can use it in your phone's browser.</p>
+      </details>
+    </div>
+  </section>
+
+  <footer class="home-footer">
+    <span>Ledgerly, a final year project.</span>
+    <span>Market prices are in US dollars, may be delayed, and are not investment advice.</span>
+  </footer>
+</body>
+</html>
